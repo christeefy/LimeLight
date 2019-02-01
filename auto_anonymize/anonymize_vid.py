@@ -14,7 +14,7 @@ from face_detection.haar_cascade import detect_faces_hc
 from face_detection.retinanet import detect_faces_ret, load_retinanet
 from recognize_face import embed_face, recognize_face
 
-def anonymize_vid(src, dst, known_faces_loc=None, 
+def anonymize_vid(src, dst=None, known_faces_loc=None, 
                   use_retinanet=True, batch_size=1, profile=False):
     '''
     Anonymize a video by blurring unrecognized faces. 
@@ -22,7 +22,8 @@ def anonymize_vid(src, dst, known_faces_loc=None,
 
     Inputs:
         src:             Path to video.
-        dst:             Path to save processsed video.
+        dst:             Path to save processsed video. If None, 
+                         append 'mod' to src filename. 
         known_faces_loc: Directory containing JPG images of 
                          recognized faces not to blur.
         use_retinanet:   Use RetinaNet (True) or 
@@ -33,7 +34,11 @@ def anonymize_vid(src, dst, known_faces_loc=None,
     Returns nothing.
     '''
     assert src.split('.')[-1].lower() in ['mov', 'mp4'], 'src is not a valid file.'
-    assert dst.split('.')[-1].lower() == 'mp4', 'Output file format must be mp4.'
+    if dst is None:
+        dst = '_mod.'.join(src.rsplit('.', 1))
+    else:
+        assert dst.split('.')[-1].lower() == 'mp4', \
+            'Output file format must be mp4.'
 
     # Record initial execution time
     if profile:
@@ -129,10 +134,12 @@ def parse_arguments():
     parser = argparse.ArgumentParser(
         description='Script to anonymize faces in a video.')
     parser.add_argument('src', help='Path to video.')
-    parser.add_argument('dst', help='Path to save processed video.')
+    parser.add_argument('--dst', 
+                        help='[Optional] Path to save processed video.' + \
+                             'If not specified, \'mod\' is append to `src` filename.')
     parser.add_argument('--known-faces-loc',
                         help='Directory containing JPG images of faces to not blur.')
-    parser.add_argument('--use-viola-jones',
+    parser.add_argument('--vj',
                         help='Use Viola Jones algorithm in lieu of RetinaNet' +
                              'for faster but less accurate face detection.',
                         dest='retinanet', action='store_false')
