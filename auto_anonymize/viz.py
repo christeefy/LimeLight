@@ -1,10 +1,10 @@
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 
 
-def mark_faces_plt(img_path, bboxes):
+def mark_faces_plt(rgb, bboxes):
     '''
     Apply a bounding box around faces in the image.
     
@@ -16,10 +16,7 @@ def mark_faces_plt(img_path, bboxes):
         An annotated Matplotlib figure.
     '''
     fig, ax = plt.subplots()
-    
-    # Parse image channels from BGR to RGB and display image
-    img = cv2.cvtColor(cv2.imread(img_path), cv2.COLOR_BGR2RGB)
-    ax.imshow(img)
+    ax.imshow(rgb)
     
     # Annotate image with bounding boxes
     for bbox in bboxes:
@@ -56,21 +53,21 @@ def mark_faces_cv2(frame, bboxes, recognized_faces=None):
                       2)
 
 
-def blur_faces(frame, bboxes, recognized_faces=None, blur_mode='gaussian', *args):
+def blur_faces(rgb, bboxes, recognized_faces=None, blur_mode='gaussian', *args):
     '''
     Blur faces in a cv2 image. 
 
     Inputs:
-        frame: A cv2 image
-        bboxes: Bounding boxes coordinates 
-                for faces (x1, y1, w, h)
+        rgb:              A cv2 RGB image
+        bboxes:           Bounding boxes coordinates 
+                          for faces (x1, y1, w, h)
         recognized_faces: A Boolean list of whether a face
                           is recognized.
-        blur_mode: A string denoting blurring method.
-                   Valid values: {'gaussian', 'median'}
+        blur_mode:        A string denoting blurring method.
+                          Valid values: {'gaussian', 'median'}
 
     Returns:
-        A cv2 image with the same properties of `frame` 
+        A cv2 RGB image with the same properties of `rgb` 
         with faces blurred.
     '''
     blur_func_key = {
@@ -79,9 +76,8 @@ def blur_faces(frame, bboxes, recognized_faces=None, blur_mode='gaussian', *args
     }
 
     assert blur_mode in blur_func_key.keys()
-
-    if not len(bboxes): return frame
-
+    
+    if not len(bboxes): return rgb
     if recognized_faces is None:
         recognized_faces = [False] * len(bboxes)
 
@@ -91,9 +87,9 @@ def blur_faces(frame, bboxes, recognized_faces=None, blur_mode='gaussian', *args
         x_slice = slice(bbox[0], bbox[0] + bbox[2])
         y_slice = slice(bbox[1], bbox[1] + bbox[3])
 
-        face = frame[y_slice, x_slice]
+        face = rgb[y_slice, x_slice]
         face = blur_func_key[blur_mode](face, *args)
 
-        frame[y_slice, x_slice] = face
+        rgb[y_slice, x_slice] = face
 
-    return frame
+    return rgb
