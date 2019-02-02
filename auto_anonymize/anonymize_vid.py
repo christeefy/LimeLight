@@ -18,7 +18,8 @@ from face_detection.retinanet import detect_faces_ret, load_retinanet
 from recognize_face import embed_face, recognize_face
 
 def anonymize_vid(src, dst=None, known_faces_loc=None, 
-                  use_retinanet=True, batch_size=1, profile=False):
+                  batch_size=1, use_retinanet=True, 
+                  mark_faces=False, profile=False):
     '''
     Anonymize a video by blurring unrecognized faces. 
     Writes a processed video to `dst`.
@@ -29,9 +30,10 @@ def anonymize_vid(src, dst=None, known_faces_loc=None,
                          append 'mod' to src filename. 
         known_faces_loc: Directory containing JPG images of 
                          recognized faces not to blur.
+        batch_size:      Process these number of images per batches.
         use_retinanet:   Use RetinaNet (True) or 
                          Viola Jones algorithm (False).
-        batch_size:      Process these number of images per batches.
+        mark_faces:      Mark faces with bounding boxes. Default to False.
         profile:         Profiles code execution time (Boolean). 
 
     Returns nothing.
@@ -116,9 +118,10 @@ def anonymize_vid(src, dst=None, known_faces_loc=None,
                     recognized = recognize_face(face_encs, recognized_face_encs)
 
             # Add annotations on screen
-            mark_faces_cv2(rgb, preds, recognized if perform_face_rec else None)
             rgb = blur_faces(rgb, preds, recognized if perform_face_rec else None,
                              'gaussian', (25, 25), 25)
+            if mark_faces:
+                mark_faces_cv2(rgb, preds, recognized if perform_face_rec else None)
 
         # Save frame
         bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
@@ -146,14 +149,17 @@ def parse_arguments():
                              'If not specified, \'mod\' is append to `src` filename.')
     parser.add_argument('--known-faces-loc',
                         help='Directory containing JPG images of faces to not blur.')
-    parser.add_argument('--vj',
-                        help='Use Viola Jones algorithm in lieu of RetinaNet' +
-                             'for faster but less accurate face detection.',
-                        dest='retinanet', action='store_false')
     parser.add_argument('--batch-size',
                         help='Batch process video frames for increased computation speed.' +
                              'Recommended for GPU only.', 
                         nargs='?', const=1, default=1, type=int)
+    parser.add_argument('--vj',
+                        help='Use Viola Jones algorithm in lieu of RetinaNet' +
+                             'for faster but less accurate face detection.',
+                        dest='retinanet', action='store_false')
+    parser.add_argument('--mark-faces', 
+                        help='Mark faces with bounding boxes. Default to False.', 
+                        action='store_true')
     parser.add_argument('--profile', help='Boolean to profile code execution time.', 
                         action='store_true')
 
@@ -168,6 +174,7 @@ def main():
                   known_faces_loc=args.known_faces_loc,
                   use_retinanet=args.retinanet,
                   batch_size=args.batch_size,
+                  mark_faces=args.mark_faces,
                   profile=args.profile)
 
 
