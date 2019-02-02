@@ -2,7 +2,7 @@ import numpy as np
 from pathlib import Path
 
 import sys
-sys.path.append('../')
+sys.path.append(str(Path(__file__).parents[1]))
 from pkg_utils import facerec2std
 
 from keras_retinanet import models

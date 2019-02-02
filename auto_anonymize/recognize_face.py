@@ -1,5 +1,10 @@
 import numpy as np
 import face_recognition
+
+from pathlib import Path
+import sys
+sys.path.append(str(Path(__file__).parent))
+
 from pkg_utils import std2facerec, facerec2std
 
 
