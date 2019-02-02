@@ -4,10 +4,13 @@ import warnings
 from pathlib import Path
 from functools import partial
 
-
 import cv2
 import numpy as np
 import face_recognition
+
+import sys
+sys.path.append(str(Path(__file__).parent))
+
 from pkg_utils import rgb_read, to_rgb
 from viz import mark_faces_cv2, blur_faces
 from face_detection.haar_cascade import detect_faces_hc
@@ -33,11 +36,12 @@ def anonymize_vid(src, dst=None, known_faces_loc=None,
 
     Returns nothing.
     '''
-    assert src.split('.')[-1].lower() in ['mov', 'mp4'], 'src is not a valid file.'
+    assert src.split('.')[-1].lower() in ['mov', 'mp4', 'avi'], \
+           'src is not a valid video file.'
     if dst is None:
         dst = '_mod.'.join(src.rsplit('.', 1))
     else:
-        assert dst.split('.')[-1].lower() == 'mp4', \
+        assert src.split('.')[-1].lower() == dst.split('.')[-1].lower(), \
             'Output file format must be mp4.'
 
     # Record initial execution time
@@ -56,11 +60,13 @@ def anonymize_vid(src, dst=None, known_faces_loc=None,
     FRAME_HEIGHT = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     FRAME_WIDTH = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     FRAME_COUNT = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    VID_FPS = int(cap.get(cv2.CAP_PROP_FPS))
+    VID_CODEC = int(cap.get(cv2.CAP_PROP_FOURCC))
 
     # Create video writer stream
     Path(dst).parent.mkdir(exist_ok=True, parents=True)
     out = cv2.VideoWriter(dst, 
-          cv2.VideoWriter_fourcc(*'mp4v'), 30, (FRAME_WIDTH, FRAME_HEIGHT))
+          VID_CODEC, VID_FPS, (FRAME_WIDTH, FRAME_HEIGHT))
 
     # Get encodings of known faces
     perform_face_rec = False      # Boolean to perform facial recognition
@@ -118,6 +124,7 @@ def anonymize_vid(src, dst=None, known_faces_loc=None,
         bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
         out.write(bgr)
     cap.release()
+    out.release()
 
     # Summarize execution times
     if profile:
