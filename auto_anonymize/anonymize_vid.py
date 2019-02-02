@@ -42,7 +42,7 @@ def anonymize_vid(src, dst=None, known_faces_loc=None,
         dst = '_mod.'.join(src.rsplit('.', 1))
     else:
         assert src.split('.')[-1].lower() == dst.split('.')[-1].lower(), \
-            'Output file format must be mp4.'
+            'Input and output file formats do not match .'
 
     # Record initial execution time
     if profile:
