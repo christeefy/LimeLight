@@ -38,8 +38,8 @@ def anonymize_vid(src, dst=None, known_faces_loc=None,
 
     Returns nothing.
     '''
-    assert src.split('.')[-1].lower() in ['mov', 'mp4', 'avi'], \
-           'src is not a valid video file.'
+    assert src.split('.')[-1].lower() in ['mov', 'mp4'], \
+           'src is not a valid video file format.'
     if dst is None:
         dst = '_mod.'.join(src.rsplit('.', 1))
     else:
@@ -63,12 +63,11 @@ def anonymize_vid(src, dst=None, known_faces_loc=None,
     FRAME_WIDTH = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     FRAME_COUNT = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     VID_FPS = int(cap.get(cv2.CAP_PROP_FPS))
-    VID_CODEC = int(cap.get(cv2.CAP_PROP_FOURCC))
 
     # Create video writer stream
     Path(dst).parent.mkdir(exist_ok=True, parents=True)
     out = cv2.VideoWriter(dst, 
-          VID_CODEC, VID_FPS, (FRAME_WIDTH, FRAME_HEIGHT))
+          cv2.VideoWriter_fourcc(*"mp4v"), VID_FPS, (FRAME_WIDTH, FRAME_HEIGHT))
 
     # Get encodings of known faces
     perform_face_rec = False      # Boolean to perform facial recognition
@@ -138,6 +137,8 @@ def anonymize_vid(src, dst=None, known_faces_loc=None,
               f'for {len(detect_times)} frames ({1/np.mean(detect_times):.1f} fps).')
         print(f'Average recognition time: {np.mean(recog_times):.4f} sec per frame' + \
               f'for {len(recog_times)} frames ({1/np.mean(recog_times):.1f} fps).')
+
+    print(f'\nAnonymized video saved at {dst}.')
 
 
 def parse_arguments():
