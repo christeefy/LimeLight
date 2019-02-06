@@ -39,7 +39,7 @@ def anonymize_vid(src, dst=None, known_faces_loc=None,
     Returns nothing.
     '''
     assert src.split('.')[-1].lower() in ['mov', 'mp4'], \
-           'src is not a valid video file format.'
+           f'{src.split(".")[-1]} is not a valid video file format.'
     if dst is None:
         dst = '_mod.'.join(src.rsplit('.', 1))
     else:
