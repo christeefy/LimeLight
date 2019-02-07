@@ -19,14 +19,14 @@ def load_retinanet():
     return model
 
 
-def detect_faces_ret(frame, model, min_score=0.5, std_coord=True):
+def detect_faces_ret(frame, model, threshold=0.5, std_coord=True):
     '''
     Detect faces using a pre-trained RetinaNet model.
 
     Inputs:
         frame: cv2 RGB image
         model: RetinaNet Keras Model
-        min_score: Minimum threshold to consider an object to 
+        threshold: Minimum threshold to consider an object to 
                    positively be a face
         std_coord: Boolean on whether output coordinates should be
                    'standardized' if True (i.e. of schema (x1, y1, w, h)).
@@ -43,7 +43,7 @@ def detect_faces_ret(frame, model, min_score=0.5, std_coord=True):
     boxes /= scale    
 
     # Keep significant bounding boxes
-    boxes = boxes[scores > min_score]
+    boxes = boxes[scores > threshold]
 
     # Convert bounding box coordinates (see docstring)
     if std_coord:

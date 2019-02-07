@@ -20,9 +20,9 @@ from face_detection.retinanet import detect_faces_ret, load_retinanet
 from recognize_face import embed_face, recognize_face
 
 def anonymize_vid(src, dst=None, known_faces_loc=None, 
-                  batch_size=1, use_retinanet=True,
+                  use_retinanet=True, threshold=0.5,
                   mark_faces=False, profile=False,
-                  expand_bbox=1.0):
+                  batch_size=1, expand_bbox=1.0):
     '''
     Anonymize a video by blurring unrecognized faces. 
     Writes a processed video to `dst`.
@@ -33,13 +33,15 @@ def anonymize_vid(src, dst=None, known_faces_loc=None,
                          append 'mod' to src filename. 
         known_faces_loc: Directory containing JPG images of 
                          recognized faces not to blur.
-        batch_size:      Process these number of images per batches.
         use_retinanet:   Use RetinaNet (True) or 
                          Viola Jones algorithm (False).
+        threshold:       Threshold to consider an object a face. 
+                         Applies to RetinaNet only.
         mark_faces:      Mark faces with bounding boxes. Default to False.
         profile:         Profiles code execution time (Boolean). 
         expand_bbox:     Expand bounding boxes height and width by a
-                         factor of (w_factor, h_factor). 
+                         factor of (w_factor, h_factor).
+        batch_size:      Process these number of images per batches. 
 
     Returns nothing.
     '''
@@ -59,7 +61,9 @@ def anonymize_vid(src, dst=None, known_faces_loc=None,
     if use_retinanet:
         K.clear_session()
         retinanet = load_retinanet()
-        detect_fn = partial(detect_faces_ret, model=retinanet)
+        detect_fn = partial(detect_faces_ret, 
+                            model=retinanet, 
+                            threshold=threshold)
     else:
         detect_fn = detect_faces_hc
 
