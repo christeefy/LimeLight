@@ -11,7 +11,7 @@ import face_recognition
 import sys
 sys.path.append(str(Path(__file__).parent))
 
-from pkg_utils import rgb_read, to_rgb
+from pkg_utils import rgb_read, to_rgb, expand_bboxes
 from viz import mark_faces_cv2, blur_faces
 from face_detection.haar_cascade import detect_faces_hc
 from face_detection.retinanet import detect_faces_ret, load_retinanet
@@ -19,7 +19,8 @@ from recognize_face import embed_face, recognize_face
 
 def anonymize_vid(src, dst=None, known_faces_loc=None, 
                   batch_size=1, use_retinanet=True,
-                  mark_faces=False, profile=False):
+                  mark_faces=False, profile=False,
+                  expand_bbox=1.0):
     '''
     Anonymize a video by blurring unrecognized faces. 
     Writes a processed video to `dst`.
@@ -35,6 +36,8 @@ def anonymize_vid(src, dst=None, known_faces_loc=None,
                          Viola Jones algorithm (False).
         mark_faces:      Mark faces with bounding boxes. Default to False.
         profile:         Profiles code execution time (Boolean). 
+        expand_bbox:     Expand bounding boxes height and width by a
+                         factor of (w_factor, h_factor). 
 
     Returns nothing.
     '''
@@ -104,6 +107,10 @@ def anonymize_vid(src, dst=None, known_faces_loc=None,
             preds = detect_fn(rgb)
 
         if len(preds):
+            # Expand bounding boxes to fully capture the face and head
+            if expand_bbox is not None:
+                preds = expand_bboxes(rgb, preds, expand_bbox)
+                
             # Perform facial recognition
             # `recognized` is a boolean of recognized faces
             if perform_face_rec:
@@ -165,6 +172,10 @@ def parse_arguments():
                         action='store_true')
     parser.add_argument('--profile', help='Boolean to profile code execution time.', 
                         action='store_true')
+    parser.add_argument('--expand_bbox', 
+                        help='Expand bounding boxes height and width by a factor of' + 
+                             '(w_factor, h_factor).',
+                        type=int, default=1, const=1)
 
     args = parser.parse_args()
     return args
