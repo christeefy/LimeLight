@@ -51,8 +51,6 @@ def threshold_factor_map(frame_shape, min_factor=0.5, pad=0.1, interp='linear'):
     assert isinstance(frame_shape, tuple), \
         'Ensure that the image shape is provided, not the image itself.'
     assert interp in ['linear'], 'Invalid interpolation method.'
-    
-    print(frame_shape)
 
     # Absolute value, relative to largest frame dimension
     pad_abs = int(pad * max(frame_shape[:2])) 
@@ -106,11 +104,6 @@ def is_above_threshold_map(bboxes, scores, threshold_map):
         ((bboxes[..., 3] + bboxes[..., 1]) // 2).astype(int),
         ((bboxes[..., 2] + bboxes[..., 0]) // 2).astype(int)
     )
-
-    print(bboxes)
-    print('bboxes: ', bboxes.shape)
-    print('scores: ', scores.shape)
-    print('centers', centers)
 
     # Map localized scores to threshold map
     return scores > threshold_map[centers]
