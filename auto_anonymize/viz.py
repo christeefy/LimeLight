@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-
+from PIL import Image
 
 def mark_faces_plt(rgb, bboxes):
     '''
@@ -53,7 +53,7 @@ def mark_faces_cv2(frame, bboxes, recognized_faces=None):
                       2)
 
 
-def blur_faces(rgb, bboxes, recognized_faces=None, blur_mode='gaussian', *args):
+def blur_faces(rgb, bboxes, recognized_faces=None, blur_mode='pixelate', *args):
     '''
     Blur faces in a cv2 image. 
 
@@ -64,13 +64,45 @@ def blur_faces(rgb, bboxes, recognized_faces=None, blur_mode='gaussian', *args):
         recognized_faces: A Boolean list of whether a face
                           is recognized.
         blur_mode:        A string denoting blurring method.
-                          Valid values: {'gaussian', 'median'}
+                          Valid values: {'pixelate', 'gaussian', 'median'}
 
     Returns:
-        A cv2 RGB image with the same properties of `rgb` 
-        with faces blurred.
+        A NumPy array representing the RGB image with the same properties
+        of `rgb` with faces blurred.
     '''
+    def pixelate(img, squeeze_ratio=16):
+        '''
+        Pixelates a img.
+
+        Note: 
+        Pixelation is done by smoothly shrinking the image
+        and then rescaling the image to its original size 
+        using a nearest neighbour interpolation of the pixels.
+
+        Inputs:
+            img: A cv2 image.
+            squeeze_ratio: Length ratio of the shrunken image.
+        '''
+        # Swap H and W dimensions 
+        *img_shape, _ = img.shape
+        swapped_shape = (img_shape[1], img_shape[0])
+
+        # Shrink image smoothly
+        shrunk = (
+            Image
+            .fromarray(img)
+            .resize(tuple(x // squeeze_ratio for x in swapped_shape), 
+                    Image.BILINEAR)
+        )
+
+        # Resize image with NEAREST interpolation
+        pixelated = shrunk.resize(swapped_shape, Image.NEAREST)
+
+        return np.asarray(pixelated)
+
+    # Create a mappiny for blur functions
     blur_func_key = {
+        'pixelate': pixelate,
         'gaussian': cv2.GaussianBlur,
         'median': cv2.medianBlur
     }

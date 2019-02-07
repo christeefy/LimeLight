@@ -41,7 +41,6 @@ def rand_hash(length=8):
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
-    print(app.config['UPLOAD_FOLDER'])
     if request.method == 'POST':
         # Ensure post request contains a video file
         if 'video' not in request.files:

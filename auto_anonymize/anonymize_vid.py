@@ -18,7 +18,7 @@ from face_detection.retinanet import detect_faces_ret, load_retinanet
 from recognize_face import embed_face, recognize_face
 
 def anonymize_vid(src, dst=None, known_faces_loc=None, 
-                  batch_size=1, use_retinanet=True, 
+                  batch_size=1, use_retinanet=True,
                   mark_faces=False, profile=False):
     '''
     Anonymize a video by blurring unrecognized faces. 
@@ -117,8 +117,10 @@ def anonymize_vid(src, dst=None, known_faces_loc=None,
                     recognized = recognize_face(face_encs, recognized_face_encs)
 
             # Add annotations on screen
-            rgb = blur_faces(rgb, preds, recognized if perform_face_rec else None,
-                             'gaussian', (25, 25), 25)
+            rgb = blur_faces(rgb=rgb, 
+                             bboxes=preds, 
+                             recognized_faces=recognized if perform_face_rec else None, 
+                             blur_mode='pixelate')
             if mark_faces:
                 mark_faces_cv2(rgb, preds, recognized if perform_face_rec else None)
 
