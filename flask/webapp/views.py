@@ -76,7 +76,7 @@ def index():
 
             # API to anonymize video
             anonymize_vid(src, known_faces_loc=upload_dst if 'faces' in request.files else None, 
-                          use_retinanet=True, mark_faces=True)
+                          use_retinanet=True, threshold=0.5, mark_faces=True)
 
             return redirect(url_for('uploaded_file', filename=mod_filename, sess_id=session_id))
     return render_template('index.html', title='Home')

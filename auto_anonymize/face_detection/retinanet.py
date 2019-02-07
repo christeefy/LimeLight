@@ -29,7 +29,7 @@ def resize_image_batch(frames):
     return frames, scale
 
 
-def threshold_factor_map(frame_shape, min_factor=0.3, pad=0.1, interp='linear'):
+def threshold_factor_map(frame_shape, min_factor=0.5, pad=0.1, interp='linear'):
     '''
     Create a map that scales the threshold 
     on the border of the image.
