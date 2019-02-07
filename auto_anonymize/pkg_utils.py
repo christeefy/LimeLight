@@ -69,4 +69,3 @@ def expand_bboxes(frame, bboxes, margins=(1, 1)):
                              1, frame_h - bboxes[..., 1])
 
     return bboxes.astype(int)
-
