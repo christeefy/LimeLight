@@ -8,6 +8,8 @@ import cv2
 import numpy as np
 import face_recognition
 
+import keras.backend as K
+
 import sys
 sys.path.append(str(Path(__file__).parent))
 
@@ -55,6 +57,7 @@ def anonymize_vid(src, dst=None, known_faces_loc=None,
 
     # Define face detection function
     if use_retinanet:
+        K.clear_session()
         retinanet = load_retinanet()
         detect_fn = partial(detect_faces_ret, model=retinanet)
     else:
