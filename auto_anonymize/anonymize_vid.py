@@ -21,6 +21,7 @@ from recognize_face import embed_face, recognize_face
 
 def anonymize_vid(src, dst=None, known_faces_loc=None, 
                   use_retinanet=True, threshold=0.5,
+                  lower_border_thresholds=True,
                   mark_faces=False, profile=False,
                   batch_size=1, expand_bbox=1.0):
     '''
@@ -36,6 +37,9 @@ def anonymize_vid(src, dst=None, known_faces_loc=None,
         use_retinanet:   Use RetinaNet (True) or 
                          Viola Jones algorithm (False).
         threshold:       Threshold to consider an object a face. 
+                         Applies to RetinaNet only.
+        lower_border_thresholds:
+                         Reduce the thresholds at the border of the images.
                          Applies to RetinaNet only.
         mark_faces:      Mark faces with bounding boxes. Default to False.
         profile:         Profiles code execution time (Boolean). 
@@ -63,7 +67,8 @@ def anonymize_vid(src, dst=None, known_faces_loc=None,
         retinanet = load_retinanet()
         detect_fn = partial(detect_faces_ret, 
                             model=retinanet, 
-                            threshold=threshold)
+                            threshold=threshold,
+                            apply_threshold_map=lower_border_thresholds)
     else:
         detect_fn = detect_faces_hc
 
@@ -168,7 +173,7 @@ def parse_arguments():
     parser.add_argument('--known-faces-loc',
                         help='Directory containing JPG images of faces to not blur.')
     parser.add_argument('--batch-size',
-                        help='Batch process video frames for increased computation speed.' +
+                        help='Batch process video frames for increased computation speed. ' +
                              'Recommended for GPU only.', 
                         nargs='?', const=1, default=1, type=int)
     parser.add_argument('--vj',
@@ -180,10 +185,16 @@ def parse_arguments():
                         action='store_true')
     parser.add_argument('--profile', help='Boolean to profile code execution time.', 
                         action='store_true')
+    parser.add_argument('--threshold', help='Threshold to consider an object a face. ' + 
+                                            'Applies to RetinaNet only.',
+                        nargs='?', default=0.5, const=0.5, type=int)
+    parser.add_argument('--disable_border_thresholds', 
+                        help='Disable threshold-lowering at the frame borders.',
+                        action='store_false', dest='lower_border_thresholds')
     parser.add_argument('--expand_bbox', 
                         help='Expand bounding boxes height and width by a factor of' + 
                              '(w_factor, h_factor).',
-                        type=int, default=1, const=1)
+                        nargs='?', type=int, default=1, const=1)
 
     args = parser.parse_args()
     return args
