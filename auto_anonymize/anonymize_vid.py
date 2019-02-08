@@ -141,6 +141,7 @@ def anonymize_vid(src, dst=None, known_faces_loc=None,
         # Save frame
         bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
         out.write(bgr)
+    K.clear_session()
     cap.release()
     out.release()
 
