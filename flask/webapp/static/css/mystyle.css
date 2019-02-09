@@ -1,4 +1,41 @@
-.btn-primary {
-  background-color: #7ee833;
-  border-color: #7ee833;
+.demo-div {
+  display: flex;
+}
+
+
+h2 .second-color {
+    color: #60D836;
+}
+
+.rounded-portrait {
+    border-radius: 50%;
+    width: 100px;
+    margin: auto;
+    display: block;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+#submit-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 50px auto 0px;
+}
+
+.feedback-div {
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-input {
+    height: 70px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

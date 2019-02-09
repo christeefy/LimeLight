@@ -23,7 +23,7 @@
   <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
 
   <!-- Custom styles for this template -->
-  <link href="../static/css/agency.min.css" rel="stylesheet">
+  <link href="../static/css/agency.css" rel="stylesheet">
 
 </head>
 
@@ -75,7 +75,7 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-12 text-center">
-          <h2 class="section-subheading text-muted">LimeLight is a privacy tool that blurs faces in videos.</h2>
+          <h2 class="section-subheading text-muted">LimeLight is a <span class="second-color">deep learning-based</span><br>privacy tool that <span class="second-color">blurs faces in videos.</span></h2>
           <br><br>
           <h2 class="section-heading text-uppercase">Features</h2>
           <h3 class="section-subheading text-muted"></h3>
@@ -85,7 +85,7 @@
         <div class="col-md-4">
           <span class="fa-stack fa-4x">
             <i class="fas fa-circle fa-stack-2x text-primary"></i>
-            <i class="fas fa-shopping-cart fa-stack-1x fa-inverse"></i>
+            <i class="fas fa-magic fa-stack-1x fa-inverse"></i>
           </span>
           <h4 class="service-heading">Automated</h4>
           <p class="text-muted">All faces in videos are automatically blurred.</p>
@@ -93,7 +93,7 @@
         <div class="col-md-4">
           <span class="fa-stack fa-4x">
             <i class="fas fa-circle fa-stack-2x text-primary"></i>
-            <i class="fas fa-laptop fa-stack-1x fa-inverse"></i>
+            <i class="fas fa-search fa-stack-1x fa-inverse"></i>
           </span>
           <h4 class="service-heading">Selective</h4>
           <p class="text-muted">LimeLight only blurs faces that it does not recognize.</p>
@@ -218,21 +218,39 @@
         </div>
       </div>
       <div class="row">
-        <!-- <div class="col-lg-12"> -->
-        <form method="post" enctype="multipart/form-data" action="/">
-          <div class="col-lg-6">
-              <h4>[Optional] Enter faces of the subjects.</h4>
-              <input id="faceFile" type="file" name="faces" multiple>
-              <div id="faceDiv"></div>
+        <div class="col-lg-12">
+          <div class="demo-div">
+            <div class="col-md-4">
+              <button id="faceUploadButton" class="btn btn-primary btn-input text-uppercase">
+              Choose subjects' faces<br>[Optional]
+              </button>
+            </div>
+            <div id="faceDiv" class="col-md-8 feedback-div">
+                <p class="text-muted">No faces provided.</p>
+            </div>
           </div>
           <br>
-          <div class="col-lg-6">
-              <h4>Upload video here!</h4>
-              <input id="videoFile" type="file" name="video">
-              <input id="videoSubmit", type="submit" value="Upload">
+          <div class="demo-div">
+            <div class="col-lg-4">
+            <button id="videoUploadButton" class="btn btn-primary btn-input text-uppercase">
+                Choose a video
+            </button>
+            </div>
+            <div id="videoDiv" class="col-md-8 feedback-div">
+                <p id="videoFeedback" class="text-muted">No video provided.</p>
+            </div>
+          </div>    
+          <div id="submit-container" class='col-lg-12'>  
+            <button id="submitFormButton" class="btn btn-primary btn-xl text-uppercase">
+              Upload and Anonymize!
+            </button>
           </div>
+        <form method="post" enctype="multipart/form-data" action="/">
+          <input id="faceFile" type="file" name="faces" multiple hidden>
+          <input id="videoFile" type="file" name="video" hidden>
+          <input id="formSubmit", type="submit" value="Upload" hidden>  
         </form>
-        <!-- </div> -->
+        </div>
       </div>
       <!-- <div class="row">
         <div class="col-lg-12">
@@ -347,17 +365,12 @@
             <p class="text-muted">Artificial Intelligence Fellow<br>Insight Data Science</p>
             <ul class="list-inline social-buttons">
               <li class="list-inline-item">
-                <a href="#">
-                  <i class="fab fa-twitter"></i>
+                <a target="_blank" rel="noopener noreferrer" href="https://github.com/christeefy/AutoAnonymize-Insight">
+                  <i class="fab fa-github"></i>
                 </a>
               </li>
               <li class="list-inline-item">
-                <a href="#">
-                  <i class="fab fa-facebook-f"></i>
-                </a>
-              </li>
-              <li class="list-inline-item">
-                <a href="#">
+                <a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/christophertee/">
                   <i class="fab fa-linkedin-in"></i>
                 </a>
               </li>
@@ -717,8 +730,12 @@
   <!-- Custom scripts for this template -->
   <script src="../static/js/agency.min.js"></script>
 
-  <!-- Script to load faces -->
+  <!-- My scripts -->
+  <script src="../static/js/buttons_to_inputs.js"></script>
   <script src="../static/js/load_faces.js"></script>
+  <script src="../static/js/video_form_feedback.js"></script>
+  
+
 
 </body>
 
