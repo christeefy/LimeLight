@@ -4,14 +4,13 @@ const submitFormButton = document.getElementById("submitFormButton")
 
 faceUploadButton.addEventListener("click", e => {
     document.getElementById("faceFile").click();
-    return false
 })
 
 videoUploadButton.addEventListener("click", e => {
-    // getData
     document.getElementById("videoFile").click();
 })
 
 submitFormButton.addEventListener("click", e => {
+    // document.getElementsByTagName("body")[0].setAttribute("filter", "blur(3px)");
     document.getElementById("formSubmit").click();
 })
