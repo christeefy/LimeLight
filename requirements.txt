@@ -1,0 +1,9 @@
+face-recognition==1.2.3
+Keras==2.2.4
+keras-retinanet==0.5.0
+matplotlib==3.0.2
+numpy==1.15.4
+opencv-python==4.0.0.21
+Pillow==5.4.1
+tensorflow==1.12.0
+tensorboard==1.12.2
