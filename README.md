@@ -4,7 +4,7 @@ This repo documents my demo project during my stint with the Insight program at 
 ### What is LimeLight?
 LimeLight is a deep-learning based privacy tool that *automatically* and *selectively* blurs faces in videos.
 
-<a href="www.auto-anonymize.com" target="_blank">Check out LimeLight's website!</a>
+<a href="http://www.auto-anonymize.com" target="_blank">Check out LimeLight's website!</a>
 
 ### What is LimeLight Trying to Solve?
 Video content creators, such as social media vloggers and news television companies, have to comply with data privacy laws like the GDPR in Europe. 
