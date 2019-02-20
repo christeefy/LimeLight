@@ -9,7 +9,7 @@ import warnings
 from pathlib import Path
 import sys
 sys.path.append('../')
-from auto_anonymize.anonymize_vid import anonymize_vid
+from limelight.anonymize_vid import anonymize_vid
 
 
 def valid_file(filename, mode):
