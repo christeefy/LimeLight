@@ -6,7 +6,8 @@ sys.path.append(str(Path(__file__).parents[1]))
 from pkg_utils import facerec2std
 
 from keras_retinanet import models
-from keras_retinanet.utils.image import preprocess_image, resize_image, compute_resize_scale
+from keras_retinanet.utils.image import preprocess_image, resize_image, \
+    compute_resize_scale
 
 
 def load_retinanet():
@@ -21,7 +22,7 @@ def load_retinanet():
 
 def resize_image_batch(frames):
     '''
-    Wrapper function to resize a batch of images. 
+    Wrapper function to resize a batch of images.
     Assumption is that images are of the same shape.
     '''
     scale = compute_resize_scale(frames[0].shape)
@@ -31,7 +32,7 @@ def resize_image_batch(frames):
 
 def threshold_factor_map(frame_shape, min_factor=0.5, pad=0.1, interp='linear'):
     '''
-    Create a map that scales the threshold 
+    Create a map that scales the threshold
     on the border of the image.
 
     Values at the frame borders will have the lowest factor of `min_factor`.
@@ -53,7 +54,7 @@ def threshold_factor_map(frame_shape, min_factor=0.5, pad=0.1, interp='linear'):
     assert interp in ['linear'], 'Invalid interpolation method.'
 
     # Absolute value, relative to largest frame dimension
-    pad_abs = int(pad * max(frame_shape[:2])) 
+    pad_abs = int(pad * max(frame_shape[:2]))
 
     # Initialize placeholders for map, the edge and corner objects
     map = np.ones(frame_shape[:2])
@@ -66,7 +67,7 @@ def threshold_factor_map(frame_shape, min_factor=0.5, pad=0.1, interp='linear'):
     corner_factor += corner_factor.T
     for i in range(len(corner_factor)):
         corner_factor[i, i] /= 2
-        
+
     # Apply corner factor to all four corners
     # in the following order: (UL, UR, LL, LR)
     map[:pad_abs, :pad_abs] = corner_factor
@@ -109,7 +110,7 @@ def is_above_threshold_map(bboxes, scores, threshold_map):
     return scores > threshold_map[centers]
 
 
-def detect_faces_ret(frame, model, threshold=0.5, 
+def detect_faces_ret(frame, model, threshold=0.5,
                      std_coord=True, apply_threshold_map=True):
     '''
     Detect faces using a pre-trained RetinaNet model.
@@ -117,7 +118,7 @@ def detect_faces_ret(frame, model, threshold=0.5,
     Inputs:
         frame: cv2 RGB image
         model: RetinaNet Keras Model
-        threshold: Minimum threshold to consider an object to 
+        threshold: Minimum threshold to consider an object to
                    positively be a face
         std_coord: Boolean on whether output coordinates should be
                    'standardized' if True (i.e. of schema (x1, y1, w, h)).
@@ -133,7 +134,7 @@ def detect_faces_ret(frame, model, threshold=0.5,
     image = preprocess_image(frame)
     image, scale = resize_image(image)
     boxes, scores, _ = model.predict_on_batch(np.expand_dims(image, axis=0))
-    boxes /= scale    
+    boxes /= scale
 
     # Filter out null-ish values in prediction output
     boxes = boxes[scores >= 0]
