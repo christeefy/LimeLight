@@ -58,8 +58,10 @@ def expand_bboxes(frame, bboxes, margins=(1, 1)):
         A list of expanded bounding boxes.
     '''
     if isinstance(margins, float):
+        assert margins > 0, 'margins must be greater than 0.'
         margins = (margins, margins)
     assert isinstance(margins, tuple), 'margins has to be a tuple or a float.'
+    assert all(margin > 0 for margin in margins), 'margins must be greater than 0.'
 
     frame_h, frame_w, _ = frame.shape
 

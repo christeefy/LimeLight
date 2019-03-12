@@ -26,11 +26,13 @@ def resize_image_batch(frames):
     Assumption is that images are of the same shape.
     '''
     scale = compute_resize_scale(frames[0].shape)
-    frames = np.array(list(map(lambda x: x[0], [resize_image(frame) for frame in frames])))
+    frames = np.array(list(map(lambda x: x[0],
+                               [resize_image(frame) for frame in frames])))
     return frames, scale
 
 
-def threshold_factor_map(frame_shape, min_factor=0.5, pad=0.1, interp='linear'):
+def threshold_factor_map(frame_shape, min_factor=0.5,
+                         pad=0.1, interp='linear'):
     '''
     Create a map that scales the threshold
     on the border of the image.

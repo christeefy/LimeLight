@@ -14,11 +14,11 @@ def embed_face(rgb, bboxes):
 
     Inputs:
         rgb:    cv2 RGB image
-        bboxes: List of bounding box coordinates 
+        bboxes: List of bounding box coordinates
                 (std: x1, y1, w, h).
 
-    Returns: 
-        A list of 128-dim face embeddings. 
+    Returns:
+        A list of 128-dim face embeddings.
         Has the same length as `bboxes`.
     '''
     return face_recognition.face_encodings(rgb, std2facerec(bboxes))
@@ -28,11 +28,11 @@ def recognize_face(new, known):
     '''
     Compares whether a list of new face encodings matches
     a list of known face encodings.
-    
+
     Inputs:
         new: A list of new face encodings
         known: A list of known face encodings
-    
+
     Return a NumPy boolean with the same length as `new`.
     '''
     assert isinstance(new, list), 'Ensure `new` argument is a list.'

@@ -105,7 +105,8 @@ def anonymize_vid(src, dst=None, known_faces_loc=None,
     # Video processing loop
     while cap.isOpened():
         ret, frame = cap.read()
-        if not ret: break
+        if not ret:
+            break
 
         rgb = to_rgb(frame)
 
