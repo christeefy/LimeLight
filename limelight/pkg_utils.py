@@ -25,7 +25,10 @@ def facerec2std(bboxes):
     face_recognition package (t, r, b, l)
     to (x1, y1, w, h).
     '''
-    return np.array([(bbox[3], bbox[0], bbox[1] - bbox[3], bbox[2] - bbox[0]) for bbox in bboxes])
+    return np.array([(bbox[3],
+                      bbox[0],
+                      bbox[1] - bbox[3],
+                      bbox[2] - bbox[0]) for bbox in bboxes])
 
 
 def std2facerec(bboxes):
@@ -34,7 +37,10 @@ def std2facerec(bboxes):
     (x1, y1, w, h) to face_recognition
     package (t, r, b, l).
     '''
-    return np.array([(bbox[1], bbox[0] + bbox[2], bbox[1] + bbox[3], bbox[0]) for bbox in bboxes])
+    return np.array([(bbox[1],
+                      bbox[0] + bbox[2],
+                      bbox[1] + bbox[3],
+                      bbox[0]) for bbox in bboxes])
 
 
 def expand_bboxes(frame, bboxes, margins=(1, 1)):
