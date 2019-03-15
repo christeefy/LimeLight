@@ -112,13 +112,13 @@ def is_above_threshold_map(bboxes, scores, threshold_map):
     return scores > threshold_map[centers]
 
 
-def detect_faces_ret(frame, model, threshold=0.5,
+def detect_faces_ret(frames, model, threshold=0.5,
                      std_coord=True, apply_threshold_map=True):
     '''
     Detect faces using a pre-trained RetinaNet model.
 
     Inputs:
-        frame: cv2 RGB image
+        frames: A NumPy array of shape (b, w, h, c)
         model: RetinaNet Keras Model
         threshold: Minimum threshold to consider an object to
                    positively be a face
@@ -132,33 +132,37 @@ def detect_faces_ret(frame, model, threshold=0.5,
         A NumPy array of bounding box predictions of shape (N x 4)
         where N is the number of positive predictions.
     '''
-    # Preprocess frame and perform inference on frame
-    image = preprocess_image(frame)
-    image, scale = resize_image(image)
-    boxes, scores, _ = model.predict_on_batch(np.expand_dims(image, axis=0))
+    # Preprocess frames and perform inference on frames
+    images = preprocess_image(frames)
+    images, scale = resize_image_batch(images)
+    boxes, scores, _ = model.predict_on_batch(images)
     boxes /= scale
 
-    # Filter out null-ish values in prediction output
-    boxes = boxes[scores >= 0]
-    scores = scores[scores >= 0]
+    # Process outputs for each frame prediction
+    boxes_list = []
+    for box, score in zip(boxes, scores):
+        # Filter out null-ish values in prediction output
+        box = box[score >= 0]
+        score = score[score >= 0]
 
-    # Keep significant bounding boxes
-    if apply_threshold_map:
-        threshold_map = threshold * threshold_factor_map(frame.shape)
-        sig_idx = is_above_threshold_map(boxes, scores, threshold_map)
-        boxes = boxes[sig_idx]
-    else:
-        boxes = boxes[scores > threshold]
+        # Keep significant bounding boxes
+        if apply_threshold_map:
+            threshold_map = threshold * threshold_factor_map(frames[0].shape)
+            sig_idx = is_above_threshold_map(box, score, threshold_map)
+            box = box[sig_idx]
+        else:
+            box = box[scores > threshold]
 
-    # Convert bounding box coordinates (see docstring)
-    if std_coord:
-        std_boxes = np.zeros(boxes.shape)
-        std_boxes[..., :2] = boxes[..., :2]
-        std_boxes[:, 2] = boxes[:, 2] - boxes[:, 0]
-        std_boxes[:, 3] = boxes[:, 3] - boxes[:, 1]
-        boxes = std_boxes
+        # Convert bounding box coordinates (see docstring)
+        if std_coord:
+            std_box = np.zeros(box.shape)
+            std_box[..., :2] = box[..., :2]
+            std_box[:, 2] = box[:, 2] - box[:, 0]
+            std_box[:, 3] = box[:, 3] - box[:, 1]
+            box = std_box
 
-    # Sort detect faces from left to right
-    boxes = boxes[np.argsort(boxes[:, 0])]
+        # Sort detect faces from left to right
+        box = box[np.argsort(box[:, 0])].astype(int)
+        boxes_list.append(box)
 
-    return boxes.astype(int)
+    return boxes_list
