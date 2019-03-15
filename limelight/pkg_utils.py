@@ -7,9 +7,11 @@ import keras.backend as K
 def to_rgb(bgr):
     '''
     Convert an image's channels from
-    BGR to RGB.
+    BGR to RGB. Batch processing compatible.
     '''
-    return cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+    if bgr.shape[-1] != 3:
+        raise AssertionError('Image can only have three colour channels.')
+    return bgr[..., (2, 1, 0)]
 
 
 def rgb_read(img_path):
@@ -25,10 +27,14 @@ def facerec2std(bboxes):
     face_recognition package (t, r, b, l)
     to (x1, y1, w, h).
     '''
-    return np.array([(bbox[3],
-                      bbox[0],
-                      bbox[1] - bbox[3],
-                      bbox[2] - bbox[0]) for bbox in bboxes])
+    res = np.empty(shape=bboxes.shape, dtype=np.uint)
+
+    res[..., 0] = bboxes[..., 3]
+    res[..., 1] = bboxes[..., 0]
+    res[..., 2] = bboxes[..., 1] - bboxes[..., 3]
+    res[..., 3] = bboxes[..., 2] - bboxes[..., 0]
+
+    return res
 
 
 def std2facerec(bboxes):
@@ -37,10 +43,14 @@ def std2facerec(bboxes):
     (x1, y1, w, h) to face_recognition
     package (t, r, b, l).
     '''
-    return np.array([(bbox[1],
-                      bbox[0] + bbox[2],
-                      bbox[1] + bbox[3],
-                      bbox[0]) for bbox in bboxes])
+    res = np.empty(shape=bboxes.shape, dtype=np.uint)
+
+    res[..., 0] = bboxes[..., 1]
+    res[..., 1] = bboxes[..., 0] + bboxes[..., 2]
+    res[..., 2] = bboxes[..., 1] + bboxes[..., 3]
+    res[..., 3] = bboxes[..., 0]
+
+    return res
 
 
 def expand_bboxes(frame, bboxes, margins=(1, 1)):
@@ -67,7 +77,8 @@ def expand_bboxes(frame, bboxes, margins=(1, 1)):
         assert margins > 0, 'margins must be greater than 0.'
         margins = (margins, margins)
     assert isinstance(margins, tuple), 'margins has to be a tuple or a float.'
-    assert all(margin > 0 for margin in margins), 'margins must be greater than 0.'
+    assert all(margin > 0 for margin in margins), \
+        'margins must be greater than 0.'
 
     frame_h, frame_w, _ = frame.shape
 
@@ -95,3 +106,32 @@ def reset_session():
 
     sess = tf.Session(config=config)
     K.tensorflow_backend.set_session(sess)
+
+
+def frame_gen(cap, batch_size=1):
+    '''
+    Create a generator that outputs batch of video frames.
+
+    Arguments:
+        cap -- cv2 video capture object
+        batch_size {int} -- Number of frames per batch
+    '''
+
+    while True:
+        frames = []
+        for _ in range(batch_size):
+            if cap.isOpened():
+                ret, frame = cap.read()
+                if not ret:
+                    if len(frames):
+                        yield np.array(frames)
+                    return
+                frames.append(frame)
+        yield np.array(frames)
+
+
+if __name__ == '__main__':
+    cap = cv2.VideoCapture('demo/examples/short/dwayne_short_super.mp4')
+    gen = frame_gen(cap, 4)
+    for i, f in enumerate(gen):
+        print(i, len(f))
