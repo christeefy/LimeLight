@@ -5,7 +5,7 @@ from limelight.pkg_utils import expand_bboxes
 
 from hypothesis import given, assume
 from bbox_test_utils import generate_std_coordinates
-from bbox_test_utils import generate_frame, generate_margins
+from bbox_test_utils import generate_frame_shape, generate_margins
 
 
 def test_correctness_expand_bboxes():
@@ -45,7 +45,7 @@ def test_correctness_expand_bboxes():
                                            margins=m))
 
 
-@given(shape=generate_frame(),
+@given(shape=generate_frame_shape(),
        bboxes=generate_std_coordinates(),
        margins=generate_margins())
 def test_fuzz_expand_bboxes(shape, bboxes, margins):

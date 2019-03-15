@@ -26,7 +26,7 @@ def generate_std_coordinates():
     return st.lists(_generate_sorted_tuples(), min_size=1)
 
 
-def generate_frame():
+def generate_frame_shape():
     return st.tuples(
         st.integers(min_value=1, max_value=2**16),
         st.integers(min_value=1, max_value=2**16),
